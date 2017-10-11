@@ -42,11 +42,11 @@ periods = 2
 n = neuralNetwork(number_of_inputs, categories, periods)
 n.status()
 
-def calcScore():
+def calcScore(X, y):
     scorecard = []
-    for i in range(X_test.shape[0]):
-        y_pred = n.query(list(X_test[i,:]))
-        if y_pred == y_test[i]:
+    for i in range(X.shape[0]):
+        y_pred = n.query(list(X[i,:]))
+        if y_pred == y[i]:
             scorecard.append(1)
         else:
             scorecard.append(0)
@@ -59,6 +59,7 @@ X_test = X_test * 0.01
 epochs = 100
 score = 0.
 num_iter = 0
+all_scores_test, all_scores_train = [], []
 # for e in range(epochs):
 while score < .9 and num_iter < 1000:
     # go through all records in the training data set
@@ -70,10 +71,18 @@ while score < .9 and num_iter < 1000:
     pass
 
     # n.status()
-    print(num_iter)
     if (num_iter+1) % 10 == 0:
-        score = calcScore()
-        print(score)
-        n.status()
+        print(num_iter)
+        score_test = calcScore(X_test, y_test)
+        score_train = calcScore(X_train, y_train)
+        print(score_test), print(score_train)
+        all_scores_test.append(score_test)
+        all_scores_train.append(score_train)
+        # n.status()
     num_iter += 1
+
+plt.plot(all_scores_test, 'ro-')
+plt.plot(all_scores_train, 'bo-')
+plt.legend(['Test Acc', 'Train Acc'])
+plt.show()
 
