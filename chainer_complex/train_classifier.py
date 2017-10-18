@@ -12,17 +12,18 @@ from chainer.datasets import get_mnist
 from chainer import serializers
 from sklearn import metrics
 
-from common.net import Alex, ComplexNN 
+from common.net import Alex, ComplexNN, ComplexSmallNN 
 import cupy
 
 from common import dataset
 
 
 ## Alex net ##
+# chainer.config.debug = True
 
 
 
-model_map = {"AlexStock": Alex, "ComplexNN": ComplexNN}
+model_map = {"AlexStock": Alex, "ComplexNN": ComplexNN, "ComplexSmallNN" : ComplexSmallNN}
 
 parser = argparse.ArgumentParser(description='Chainer example: MNIST')
 parser.add_argument('--batchsize', '-b', type=int, default=100,
