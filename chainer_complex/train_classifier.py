@@ -12,7 +12,7 @@ from chainer.datasets import get_mnist
 from chainer import serializers
 from sklearn import metrics
 
-from common.net import Alex, ComplexNN, ComplexSmallNN 
+from common.net import Alex, ComplexNN, ComplexSmallNN, AlexSmall
 import cupy
 
 from common import dataset
@@ -23,7 +23,7 @@ from common import dataset
 
 
 
-model_map = {"AlexStock": Alex, "ComplexNN": ComplexNN, "ComplexSmallNN" : ComplexSmallNN}
+model_map = {"AlexStock": Alex, "ComplexNN": ComplexNN, "ComplexSmallNN" : ComplexSmallNN, "AlexSmall" : AlexSmall}
 
 parser = argparse.ArgumentParser(description='Chainer example: MNIST')
 parser.add_argument('--batchsize', '-b', type=int, default=100,
@@ -46,6 +46,8 @@ if not os.path.exists(args.out):
 
 ###### SETUP DATASET #####
 noise_levels = range(-18, 20, 2)
+noise_levels = range(0,20,2)
+noise_levels = [0,18]
 RFdata_train = dataset.RFModLabeled(noise_levels=noise_levels, test=False)
 RFdata_test = dataset.RFModLabeled(noise_levels=noise_levels, test=True)
 
@@ -53,13 +55,14 @@ num_classes = np.unique(RFdata_train.ys).shape[0]
 
 
 # train model
-if args.model_type == "AlexStock":
+if args.model_type == "AlexStock" or args.model_type == "AlexSmall":
+    print "AlexSmall"
     model = L.Classifier(model_map[args.model_type](num_classes, init_weights=True, filter_height=2))
 else:
     model = L.Classifier(model_map[args.model_type](num_classes, init_weights=True, filter_height=1))
 
 if args.gpu >= 0:
-	# chainer.cuda.get_device_from_id(args.gpu).use()
+	chainer.cuda.get_device_from_id(args.gpu).use()
 	model.to_gpu(args.gpu)
 
 
